@@ -122,9 +122,9 @@ const Budget = () => {
             />
           ))}
         </div>
-      )}
+)}
 
-      <FloatingActionButton onClick={() => setIsModalOpen(true)} />
+      <FloatingActionButton />
 
       <BudgetModal
         isOpen={isModalOpen}
