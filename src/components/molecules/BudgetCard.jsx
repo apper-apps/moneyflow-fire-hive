@@ -79,11 +79,11 @@ const BudgetCard = ({ budget, onEdit, onDelete }) => {
         </div>
       </div>
       
-      <div className="space-y-2">
-<div className="flex justify-between text-sm">
+<div className="space-y-2">
+        <div className="flex justify-between text-sm">
           <span className="text-gray-600">Progress</span>
           <span className={`font-medium ${textColor}`}>
-            {percentage.toFixed(0)}%
+            {percentage.toFixed(0)}% spent
           </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
