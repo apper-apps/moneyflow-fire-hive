@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { toast } from 'react-toastify';
-import ApperIcon from '@/components/ApperIcon';
-import Button from '@/components/atoms/Button';
-import { formatCurrency, formatDate } from '@/utils/formatters';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { formatCurrency, formatDate } from "@/utils/formatters";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+
 const getCategoryIcon = (category) => {
   const iconMap = {
     'Food': 'Utensils',
@@ -17,20 +18,17 @@ const getCategoryIcon = (category) => {
   return iconMap[category] || 'DollarSign';
 };
 
-const TransactionItem = ({ transaction, onEdit, onDelete }) => {
-const isIncome = transaction.type === 'income';
+const TransactionItem = ({ transaction, onEdit = () => {}, onDelete = () => {} }) => {
+  const isIncome = transaction.type === 'income';
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const [swipeOffset, setSwipeOffset] = useState(0);
   
-  // Handle swipe gestures for mobile delete
   const minSwipeDistance = 50;
   
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-  
+  const onTouchStart = (e) => setTouchStart(e.targetTouches[0].clientX);
   const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
   
   const onTouchEnd = () => {
@@ -44,22 +42,29 @@ const isIncome = transaction.type === 'income';
     }
   };
   
-  const handleEdit = (e) => {
+const handleEdit = (e) => {
     e.stopPropagation();
-    onEdit(transaction);
+    if (typeof onEdit === 'function') {
+      onEdit(transaction);
+    } else {
+      console.warn('onEdit prop is not a function');
+    }
   };
-  
-  const handleDelete = async (e) => {
+
+const handleDelete = async (e) => {
     e.stopPropagation();
     try {
-      await onDelete(transaction.Id);
-      setShowDeleteConfirm(false);
-      toast.success('Transaction deleted successfully!');
+      if (typeof onDelete === 'function') {
+        await onDelete(transaction.id);
+        toast.success('Transaction deleted successfully');
+      } else {
+        console.warn('onDelete prop is not a function');
+      }
     } catch (error) {
+      console.error('Error deleting transaction:', error);
       toast.error('Failed to delete transaction');
     }
   };
-  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -72,7 +77,7 @@ const isIncome = transaction.type === 'income';
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer"
+className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer group"
       >
       <div className="flex items-center gap-3">
         <div className={`p-2 rounded-full ${
@@ -97,7 +102,7 @@ const isIncome = transaction.type === 'income';
             <p className="text-sm text-gray-500">{formatDate(transaction.date)}</p>
           </div>
         </div>
-</div>
+      </div>
         <div className="flex items-center gap-2">
           <div className="text-right">
             <p className={`font-semibold ${
