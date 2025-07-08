@@ -7,6 +7,7 @@ import FloatingActionButton from '@/components/molecules/FloatingActionButton';
 import Loading from '@/components/ui/Loading';
 import Error from '@/components/ui/Error';
 import Empty from '@/components/ui/Empty';
+import Button from '@/components/atoms/Button';
 import { budgetService } from '@/services/api/budgetService';
 const Budget = () => {
   const [budgets, setBudgets] = useState([]);
@@ -92,7 +93,7 @@ const Budget = () => {
 
   return (
     <div className="space-y-6">
-      <motion.div
+<motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center justify-between"
@@ -101,8 +102,13 @@ const Budget = () => {
           <h1 className="text-2xl font-bold text-gray-800">Budget</h1>
           <p className="text-gray-600">Monitor your spending limits and track progress</p>
         </div>
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          className="hidden sm:flex"
+        >
+          Create Budget Category
+        </Button>
       </motion.div>
-
 {budgets.length === 0 ? (
         <Empty
           icon="PieChart"
