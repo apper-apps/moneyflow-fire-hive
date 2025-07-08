@@ -37,8 +37,7 @@ const Dashboard = () => {
         : total - transaction.amount;
     }, 0);
   };
-
-  const calculateIncome = () => {
+const calculateIncome = () => {
     return transactions
       .filter(t => t.type === 'income')
       .reduce((total, t) => total + t.amount, 0);
@@ -50,6 +49,54 @@ const Dashboard = () => {
       .reduce((total, t) => total + t.amount, 0);
   };
 
+  const calculateMonthlyIncome = () => {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    
+    return transactions
+      .filter(t => {
+        const transactionDate = new Date(t.date);
+        return t.type === 'income' && 
+               transactionDate.getMonth() === currentMonth && 
+               transactionDate.getFullYear() === currentYear;
+      })
+      .reduce((total, t) => total + t.amount, 0);
+  };
+
+  const calculateMonthlyExpenses = () => {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    
+    return transactions
+      .filter(t => {
+        const transactionDate = new Date(t.date);
+        return t.type === 'expense' && 
+               transactionDate.getMonth() === currentMonth && 
+               transactionDate.getFullYear() === currentYear;
+      })
+      .reduce((total, t) => total + t.amount, 0);
+  };
+
+  const getBiggestSpendingCategory = () => {
+    const categoryTotals = transactions
+      .filter(t => t.type === 'expense')
+      .reduce((acc, t) => {
+        acc[t.category] = (acc[t.category] || 0) + t.amount;
+        return acc;
+      }, {});
+
+    if (Object.keys(categoryTotals).length === 0) {
+      return { category: 'No expenses', amount: 0 };
+    }
+
+    const biggestCategory = Object.entries(categoryTotals)
+      .reduce((max, [category, amount]) => 
+        amount > max.amount ? { category, amount } : max, 
+        { category: '', amount: 0 }
+      );
+
+    return biggestCategory;
+  };
   const getRecentTransactions = () => {
     return transactions
       .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -57,9 +104,10 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return (
+return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Loading rows={2} />
           <Loading rows={2} />
           <Loading rows={2} />
           <Loading rows={2} />
@@ -73,9 +121,12 @@ const Dashboard = () => {
     return <Error message={error} onRetry={loadTransactions} />;
   }
 
-  const balance = calculateBalance();
+const balance = calculateBalance();
   const income = calculateIncome();
   const expenses = calculateExpenses();
+  const monthlyIncome = calculateMonthlyIncome();
+  const monthlyExpenses = calculateMonthlyExpenses();
+  const biggestSpending = getBiggestSpendingCategory();
   const recentTransactions = getRecentTransactions();
 
   return (
@@ -91,24 +142,31 @@ const Dashboard = () => {
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard
-          title="Current Balance"
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<StatCard
+          title="Total Balance"
           value={formatCurrency(balance)}
           icon="Wallet"
           color={balance >= 0 ? 'success' : 'error'}
         />
         <StatCard
-          title="Total Income"
-          value={formatCurrency(income)}
+          title="Monthly Income"
+          value={formatCurrency(monthlyIncome)}
           icon="TrendingUp"
           color="success"
         />
         <StatCard
-          title="Total Expenses"
-          value={formatCurrency(expenses)}
+          title="Monthly Expenses"
+          value={formatCurrency(monthlyExpenses)}
           icon="TrendingDown"
           color="error"
+        />
+        <StatCard
+          title="Biggest Spending"
+          value={formatCurrency(biggestSpending.amount)}
+          subtitle={biggestSpending.category}
+          icon="PieChart"
+          color="warning"
         />
       </div>
 
