@@ -49,9 +49,10 @@ const calculateIncome = () => {
       .reduce((total, t) => total + t.amount, 0);
   };
 
-  const calculateMonthlyIncome = () => {
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
+const calculateMonthlyIncome = () => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
     
     return transactions
       .filter(t => {
@@ -64,8 +65,9 @@ const calculateIncome = () => {
   };
 
   const calculateMonthlyExpenses = () => {
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
     
     return transactions
       .filter(t => {
@@ -161,7 +163,7 @@ const balance = calculateBalance();
           icon="TrendingDown"
           color="error"
         />
-        <StatCard
+<StatCard
           title="Biggest Spending"
           value={formatCurrency(biggestSpending.amount)}
           subtitle={biggestSpending.category}
