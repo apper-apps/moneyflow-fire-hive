@@ -2,6 +2,18 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import ApperIcon from '@/components/ApperIcon';
 import { formatCurrency, formatDate } from '@/utils/formatters';
+const getCategoryIcon = (category) => {
+  const iconMap = {
+    'Food': 'Utensils',
+    'Transport': 'Car',
+    'Entertainment': 'Film',
+    'Bills': 'Receipt',
+    'Shopping': 'ShoppingBag',
+    'Income': 'TrendingUp',
+    'general': 'DollarSign'
+  };
+  return iconMap[category] || 'DollarSign';
+};
 
 const TransactionItem = ({ transaction }) => {
   const isIncome = transaction.type === 'income';
@@ -23,9 +35,18 @@ const TransactionItem = ({ transaction }) => {
             className="text-white"
           />
         </div>
-        <div>
+<div>
           <p className="font-medium text-gray-800">{transaction.description}</p>
-          <p className="text-sm text-gray-500">{formatDate(transaction.date)}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <ApperIcon 
+              name={getCategoryIcon(transaction.category)} 
+              size={14} 
+              className="text-gray-400"
+            />
+            <p className="text-sm text-gray-500">{transaction.category}</p>
+            <span className="text-gray-300">•</span>
+            <p className="text-sm text-gray-500">{formatDate(transaction.date)}</p>
+          </div>
         </div>
       </div>
       <div className="text-right">
@@ -34,7 +55,6 @@ const TransactionItem = ({ transaction }) => {
         }`}>
           {isIncome ? '+' : '-'}{formatCurrency(Math.abs(transaction.amount))}
         </p>
-        <p className="text-sm text-gray-500 capitalize">{transaction.category}</p>
       </div>
     </motion.div>
   );

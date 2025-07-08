@@ -10,15 +10,14 @@ const TransactionModal = ({ isOpen, onClose, onTransactionAdded }) => {
   const [formData, setFormData] = useState({
     amount: '',
     description: '',
-    date: new Date().toISOString().split('T')[0],
+date: new Date().toISOString().split('T')[0],
     type: 'expense',
-    category: 'general'
+    category: 'Food'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const categories = [
-    'general', 'food', 'transportation', 'entertainment', 'utilities', 
-    'healthcare', 'shopping', 'education', 'savings', 'investment'
+const categories = [
+    'Food', 'Transport', 'Entertainment', 'Bills', 'Shopping', 'Income'
   ];
 
   const handleSubmit = async (e) => {
@@ -44,9 +43,9 @@ const TransactionModal = ({ isOpen, onClose, onTransactionAdded }) => {
       setFormData({
         amount: '',
         description: '',
-        date: new Date().toISOString().split('T')[0],
+date: new Date().toISOString().split('T')[0],
         type: 'expense',
-        category: 'general'
+        category: 'Food'
       });
       toast.success('Transaction added successfully!');
     } catch (error) {
@@ -136,9 +135,9 @@ const TransactionModal = ({ isOpen, onClose, onTransactionAdded }) => {
                 onChange={handleInputChange}
                 required
               >
-                {categories.map(category => (
+{categories.map(category => (
                   <option key={category} value={category}>
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                    {category}
                   </option>
                 ))}
               </FormField>
