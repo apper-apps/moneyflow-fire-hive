@@ -1,0 +1,82 @@
+[
+  {
+    "Id": 1,
+    "amount": 3500,
+    "description": "Monthly Salary",
+    "date": "2024-01-01T10:00:00Z",
+    "type": "income",
+    "category": "salary"
+  },
+  {
+    "Id": 2,
+    "amount": 85,
+    "description": "Grocery Shopping",
+    "date": "2024-01-02T14:30:00Z",
+    "type": "expense",
+    "category": "food"
+  },
+  {
+    "Id": 3,
+    "amount": 45,
+    "description": "Gas Station",
+    "date": "2024-01-03T08:15:00Z",
+    "type": "expense",
+    "category": "transportation"
+  },
+  {
+    "Id": 4,
+    "amount": 120,
+    "description": "Internet Bill",
+    "date": "2024-01-04T16:45:00Z",
+    "type": "expense",
+    "category": "utilities"
+  },
+  {
+    "Id": 5,
+    "amount": 200,
+    "description": "Freelance Project",
+    "date": "2024-01-05T11:20:00Z",
+    "type": "income",
+    "category": "freelance"
+  },
+  {
+    "Id": 6,
+    "amount": 65,
+    "description": "Restaurant Dinner",
+    "date": "2024-01-06T19:30:00Z",
+    "type": "expense",
+    "category": "entertainment"
+  },
+  {
+    "Id": 7,
+    "amount": 150,
+    "description": "Clothing Shopping",
+    "date": "2024-01-07T15:00:00Z",
+    "type": "expense",
+    "category": "shopping"
+  },
+  {
+    "Id": 8,
+    "amount": 80,
+    "description": "Gym Membership",
+    "date": "2024-01-08T09:00:00Z",
+    "type": "expense",
+    "category": "healthcare"
+  },
+  {
+    "Id": 9,
+    "amount": 500,
+    "description": "Investment Deposit",
+    "date": "2024-01-09T13:45:00Z",
+    "type": "expense",
+    "category": "investment"
+  },
+  {
+    "Id": 10,
+    "amount": 35,
+    "description": "Coffee Shop",
+    "date": "2024-01-10T07:30:00Z",
+    "type": "expense",
+    "category": "food"
+  }
+]
