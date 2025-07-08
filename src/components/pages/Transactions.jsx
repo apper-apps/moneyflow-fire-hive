@@ -3,34 +3,44 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import Button from '@/components/atoms/Button';
 import TransactionItem from '@/components/molecules/TransactionItem';
+import TransactionModal from '@/components/organisms/TransactionModal';
 import Loading from '@/components/ui/Loading';
 import Error from '@/components/ui/Error';
 import Empty from '@/components/ui/Empty';
 import ApperIcon from '@/components/ApperIcon';
-import { transactionService } from '@/services/api/transactionService';
+import { useTransactions } from '@/hooks/useTransactions';
 
 const Transactions = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { 
+    transactions, 
+    loading, 
+    error, 
+    loadTransactions, 
+    updateTransaction, 
+    deleteTransaction 
+  } = useTransactions();
+  
   const [filter, setFilter] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null);
 
-  const loadTransactions = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await transactionService.getAll();
-      setTransactions(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+const handleEditTransaction = (transaction) => {
+    setEditingTransaction(transaction);
+    setIsModalOpen(true);
   };
-
-  useEffect(() => {
+  
+  const handleDeleteTransaction = async (transactionId) => {
+    await deleteTransaction(transactionId);
+  };
+  
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingTransaction(null);
+  };
+  
+  const handleTransactionUpdated = () => {
     loadTransactions();
-  }, []);
+  };
 
   const getFilteredTransactions = () => {
     if (filter === 'all') return transactions;
@@ -104,14 +114,27 @@ const Transactions = () => {
             actionLabel="Add Transaction"
             onAction={() => {}}
           />
-        ) : (
+) : (
           <div className="space-y-3">
             {filteredTransactions.map((transaction) => (
-              <TransactionItem key={transaction.Id} transaction={transaction} />
+              <div key={transaction.Id} className="group">
+                <TransactionItem 
+                  transaction={transaction} 
+                  onEdit={handleEditTransaction}
+                  onDelete={handleDeleteTransaction}
+                />
+              </div>
             ))}
           </div>
         )}
-      </motion.div>
+</motion.div>
+      
+      <TransactionModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onTransactionAdded={handleTransactionUpdated}
+        editTransaction={editingTransaction}
+      />
     </div>
   );
 };

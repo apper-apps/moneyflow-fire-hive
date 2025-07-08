@@ -6,21 +6,43 @@ import FormField from '@/components/molecules/FormField';
 import ApperIcon from '@/components/ApperIcon';
 import { transactionService } from '@/services/api/transactionService';
 
-const TransactionModal = ({ isOpen, onClose, onTransactionAdded }) => {
+const TransactionModal = ({ isOpen, onClose, onTransactionAdded, editTransaction = null }) => {
   const [formData, setFormData] = useState({
     amount: '',
     description: '',
-date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().split('T')[0],
     type: 'expense',
     category: 'Food'
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const [isSubmitting, setIsSubmitting] = useState(false);
+  const isEditMode = editTransaction !== null;
 
-const categories = [
+  const categories = [
     'Food', 'Transport', 'Entertainment', 'Bills', 'Shopping', 'Income'
   ];
 
-  const handleSubmit = async (e) => {
+  // Reset form when modal opens/closes or when editTransaction changes
+  React.useEffect(() => {
+    if (isOpen && editTransaction) {
+      setFormData({
+        amount: editTransaction.amount.toString(),
+        description: editTransaction.description,
+        date: new Date(editTransaction.date).toISOString().split('T')[0],
+        type: editTransaction.type,
+        category: editTransaction.category
+      });
+    } else if (isOpen && !editTransaction) {
+      setFormData({
+        amount: '',
+        description: '',
+        date: new Date().toISOString().split('T')[0],
+        type: 'expense',
+        category: 'Food'
+      });
+    }
+  }, [isOpen, editTransaction]);
+
+const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!formData.amount || !formData.description) {
@@ -31,25 +53,34 @@ const categories = [
     setIsSubmitting(true);
     
     try {
-      const transaction = {
+      const transactionData = {
         ...formData,
         amount: parseFloat(formData.amount),
         date: new Date(formData.date).toISOString(),
       };
 
-      await transactionService.create(transaction);
+      if (isEditMode) {
+        await transactionService.update(editTransaction.Id, transactionData);
+        toast.success('Transaction updated successfully!');
+      } else {
+        await transactionService.create(transactionData);
+        toast.success('Transaction added successfully!');
+      }
+      
       onTransactionAdded();
       onClose();
-      setFormData({
-        amount: '',
-        description: '',
-date: new Date().toISOString().split('T')[0],
-        type: 'expense',
-        category: 'Food'
-      });
-      toast.success('Transaction added successfully!');
+      
+      if (!isEditMode) {
+        setFormData({
+          amount: '',
+          description: '',
+          date: new Date().toISOString().split('T')[0],
+          type: 'expense',
+          category: 'Food'
+        });
+      }
     } catch (error) {
-      toast.error('Failed to add transaction');
+      toast.error(isEditMode ? 'Failed to update transaction' : 'Failed to add transaction');
     } finally {
       setIsSubmitting(false);
     }
@@ -73,8 +104,10 @@ date: new Date().toISOString().split('T')[0],
             exit={{ opacity: 0, scale: 0.95 }}
             className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-800">Add Transaction</h2>
+<div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-gray-800">
+                {isEditMode ? 'Edit Transaction' : 'Add Transaction'}
+              </h2>
               <button
                 onClick={onClose}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -151,12 +184,15 @@ date: new Date().toISOString().split('T')[0],
                 >
                   Cancel
                 </Button>
-                <Button
+<Button
                   type="submit"
                   disabled={isSubmitting}
                   className="flex-1"
                 >
-                  {isSubmitting ? 'Adding...' : 'Add Transaction'}
+                  {isSubmitting 
+                    ? (isEditMode ? 'Updating...' : 'Adding...') 
+                    : (isEditMode ? 'Update Transaction' : 'Add Transaction')
+                  }
                 </Button>
               </div>
             </form>
